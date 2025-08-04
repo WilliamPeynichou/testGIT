@@ -1,3 +1,6 @@
 <?php
-echo "hello world";
+echo "bonjour toto";
+echo "rah oe hein";
+echo "rah oe hein";
+echo "rah oe hein";
 ?>
