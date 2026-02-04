@@ -8,9 +8,9 @@ interface BrutalBadgeProps {
 }
 
 const variants = {
-  mauve: 'bg-mauve text-deep-black border-deep-black',
-  orange: 'bg-dark-orange text-white border-deep-black',
-  yellow: 'bg-pale-yellow text-deep-black border-deep-black',
+  mauve: 'bg-mauve/80 text-deep-black border-deep-black/30 backdrop-blur-sm',
+  orange: 'bg-dark-orange/90 text-white border-deep-black/30 backdrop-blur-sm',
+  yellow: 'bg-pale-yellow text-deep-black border-deep-black/20',
   black: 'bg-deep-black text-white border-deep-black',
 };
 
@@ -18,7 +18,7 @@ export function BrutalBadge({ children, variant = 'mauve', className }: BrutalBa
   return (
     <span
       className={cn(
-        'inline-flex items-center px-3 py-1 rounded-full border-2 font-bold text-xs uppercase tracking-wide',
+        'inline-flex items-center px-2.5 py-1 rounded-lg border font-bold text-[10px] uppercase tracking-wider whitespace-nowrap',
         variants[variant],
         className
       )}

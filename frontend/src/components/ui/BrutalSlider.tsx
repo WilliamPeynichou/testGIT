@@ -1,4 +1,5 @@
 import { cn } from '@/lib/utils';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface BrutalSliderProps {
   label: string;
@@ -17,15 +18,21 @@ const thumbColors = {
 };
 
 const bgColors = {
-  mauve: 'bg-mauve/20',
-  orange: 'bg-dark-orange/20',
-  yellow: 'bg-pale-yellow',
+  mauve: 'bg-mauve/10',
+  orange: 'bg-dark-orange/8',
+  yellow: 'bg-pale-yellow/60',
 };
 
 const badgeColors = {
   mauve: 'bg-mauve',
   orange: 'bg-dark-orange text-white',
-  yellow: 'bg-pale-yellow',
+  yellow: 'bg-pale-yellow border-deep-black/20',
+};
+
+const accentBorder = {
+  mauve: 'border-mauve/30',
+  orange: 'border-dark-orange/20',
+  yellow: 'border-pale-yellow',
 };
 
 export function BrutalSlider({
@@ -37,23 +44,37 @@ export function BrutalSlider({
   color,
   budgetLabel,
 }: BrutalSliderProps) {
+  const id = `slider-${label.toLowerCase().replace(/\s/g, '-')}`;
+
   return (
-    <div className={cn('p-4 rounded-brutal border-3 border-deep-black', bgColors[color])}>
-      <div className="flex items-center justify-between mb-3">
-        <span className="font-bold text-sm uppercase tracking-wide">{label}</span>
-        <div className="flex items-center gap-2">
-          <span className="text-xs font-medium opacity-70">{budgetLabel}</span>
-          <span
+    <div className={cn('p-5 rounded-2xl border-2', bgColors[color], accentBorder[color])}>
+      <div className="flex items-center justify-between mb-4">
+        <div>
+          <label htmlFor={id} className="font-bold text-sm tracking-wide block">
+            {label}
+          </label>
+          <span className="text-xs text-deep-black/40 font-medium">{budgetLabel}</span>
+        </div>
+        <AnimatePresence mode="wait">
+          <motion.span
+            key={value}
+            initial={{ scale: 0.5, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.5, opacity: 0 }}
+            transition={{ type: 'spring', stiffness: 500, damping: 25 }}
             className={cn(
-              'inline-flex items-center justify-center w-10 h-10 rounded-full border-3 border-deep-black font-bold text-lg',
+              'inline-flex items-center justify-center w-11 h-11 rounded-2xl border-2 border-deep-black font-bold text-lg',
               badgeColors[color]
             )}
+            style={{ boxShadow: '0 3px 0 0 rgba(26,26,26,0.4)' }}
           >
             {value}
-          </span>
-        </div>
+          </motion.span>
+        </AnimatePresence>
       </div>
+
       <input
+        id={id}
         type="range"
         min={min}
         max={max}
@@ -66,10 +87,10 @@ export function BrutalSlider({
         }}
       />
       <style>{`
-        input[type="range"]::-webkit-slider-thumb {
+        #${id}::-webkit-slider-thumb {
           background: ${thumbColors[color]};
         }
-        input[type="range"]::-moz-range-thumb {
+        #${id}::-moz-range-thumb {
           background: ${thumbColors[color]};
         }
       `}</style>

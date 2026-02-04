@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import { toast } from 'sonner';
+import { AnimatePresence, motion } from 'framer-motion';
 import { Header } from './components/Header';
 import { MealSelector } from './components/MealSelector';
 import { RecipeGrid } from './components/RecipeGrid';
@@ -25,6 +26,7 @@ export default function App() {
   const handleGenerate = useCallback(async (request: GenerateRecipesRequest) => {
     setIsGenerating(true);
     setRecipes([]);
+    setShoppingList(null);
     setLastRequest(request);
     try {
       const result = await api.generateRecipes(request);
@@ -70,6 +72,7 @@ export default function App() {
   const handleRegenerateAll = useCallback(async () => {
     if (!lastRequest) return;
     setIsRegeneratingAll(true);
+    setShoppingList(null);
     try {
       const result = await api.generateRecipes(lastRequest);
       setRecipes(result.recipes);
@@ -102,39 +105,68 @@ export default function App() {
   }, [recipes, lastRequest]);
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen flex flex-col">
       <BrutalToaster />
       <Header />
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12">
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-12">
         <MealSelector onGenerate={handleGenerate} isLoading={isGenerating} />
 
-        {isGenerating && <Spinner />}
+        <AnimatePresence mode="wait">
+          {isGenerating && (
+            <motion.div
+              key="spinner"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              <Spinner />
+            </motion.div>
+          )}
 
-        {!isGenerating && recipes.length > 0 && (
-          <RecipeGrid
-            recipes={recipes}
-            onRegenerateOne={handleRegenerateOne}
-            onRegenerateAll={handleRegenerateAll}
-            onExportShoppingList={handleExportShoppingList}
-            regeneratingIndex={regeneratingIndex}
-            isRegeneratingAll={isRegeneratingAll}
-            isExporting={isExporting}
-          />
-        )}
+          {!isGenerating && recipes.length > 0 && (
+            <motion.div
+              key="recipes"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              <RecipeGrid
+                recipes={recipes}
+                onRegenerateOne={handleRegenerateOne}
+                onRegenerateAll={handleRegenerateAll}
+                onExportShoppingList={handleExportShoppingList}
+                regeneratingIndex={regeneratingIndex}
+                isRegeneratingAll={isRegeneratingAll}
+                isExporting={isExporting}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-        {shoppingList && (
-          <ShoppingList
-            shoppingList={shoppingList}
-            onClose={() => setShoppingList(null)}
-          />
-        )}
+        <AnimatePresence>
+          {shoppingList && (
+            <ShoppingList
+              shoppingList={shoppingList}
+              onClose={() => setShoppingList(null)}
+            />
+          )}
+        </AnimatePresence>
       </main>
 
       {/* Footer */}
-      <footer className="border-t-4 border-deep-black bg-off-white mt-12 py-6">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <p className="font-bold text-deep-black/60 text-sm">
+      <footer className="border-t-2 border-deep-black/10 bg-off-white/80 backdrop-blur-sm mt-auto py-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-center gap-3">
+          <div className="flex gap-1.5">
+            {['#B19CD9', '#D96846', '#FFF4B5'].map((color) => (
+              <span
+                key={color}
+                className="w-2.5 h-2.5 rounded-full border border-deep-black/20"
+                style={{ backgroundColor: color }}
+              />
+            ))}
+          </div>
+          <p className="font-semibold text-deep-black/30 text-sm">
             Recipe Planner — Propulsé par Claude AI
           </p>
         </div>
